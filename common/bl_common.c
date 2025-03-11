@@ -99,7 +99,7 @@ static int load_image(unsigned int image_id, image_info_t *image_data)
 		return io_result;
 	}
 
-	INFO("Loading image id=%u at address 0x%lx\n", image_id, image_base);
+	NOTICE("Loading image id=%u at address 0x%lx\n", image_id, image_base);
 
 	/* Find the size of the image */
 	io_result = io_size(image_handle, &image_size);
