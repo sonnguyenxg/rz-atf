@@ -68,8 +68,48 @@ static bl_mem_params_node_t bl2_mem_params_descs[] = {
 				(uint32_t) (BL33_LIMIT - BL33_BASE),
 		.image_info.image_base = BL33_BASE,
 
+		.next_handoff_image_id = BL331_IMAGE_ID,
+	},
+
+# ifdef BL331_BASE
+	{
+		.image_id = BL331_IMAGE_ID,
+
+		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP, VERSION_2,
+			entry_point_info_t, NON_SECURE | EXECUTABLE),
+		.ep_info.spsr = SPSR_64(MODE_EL2, MODE_SP_ELX,
+			DISABLE_ALL_EXCEPTIONS),
+		.ep_info.pc = BL331_BASE,
+
+		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP, VERSION_2,
+			image_info_t, 0),
+		.image_info.image_max_size =
+				(uint32_t) (BL331_LIMIT - BL331_BASE),
+		.image_info.image_base = BL331_BASE,
+
+		.next_handoff_image_id = BL332_IMAGE_ID,
+	},
+# endif
+
+# ifdef BL332_BASE
+	{
+		.image_id = BL332_IMAGE_ID,
+
+		SET_STATIC_PARAM_HEAD(ep_info, PARAM_EP, VERSION_2,
+			entry_point_info_t, NON_SECURE | EXECUTABLE),
+		.ep_info.spsr = SPSR_64(MODE_EL2, MODE_SP_ELX,
+			DISABLE_ALL_EXCEPTIONS),
+		.ep_info.pc = BL332_BASE,
+
+		SET_STATIC_PARAM_HEAD(image_info, PARAM_EP, VERSION_2,
+			image_info_t, 0),
+		.image_info.image_max_size =
+				(uint32_t) (BL332_LIMIT - BL332_BASE),
+		.image_info.image_base = BL332_BASE,
+
 		.next_handoff_image_id = INVALID_IMAGE_ID,
 	}
+# endif
 };
 
 REGISTER_BL_IMAGE_DESCS(bl2_mem_params_descs)

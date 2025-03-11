@@ -28,6 +28,8 @@
 
 /* Non-Trusted Firmware BL33 */
 #define BL33_IMAGE_ID			U(5)
+#define BL331_IMAGE_ID			U(51)
+#define BL332_IMAGE_ID			U(52)
 
 /* Certificates */
 #define TRUSTED_BOOT_FW_CERT_ID		U(6)
