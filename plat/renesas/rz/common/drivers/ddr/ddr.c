@@ -1453,3 +1453,158 @@ static void program_mc2(void)
 	// Step2
 	rmw_mc_reg(DDRMC_R027, 0xFFFFFF80, tphy_rdlat & 0x7F);
 }
+
+static void program_mc1_g2l_100(uint8_t *lp_auto_entry_en)
+{
+	int i;
+
+	// Step1
+	for (i = 0; i < ARRAY_SIZE(mc_init_tbl); i++) {
+		if (mc_init_tbl[i][0] == DDRMC_R006) {
+			*lp_auto_entry_en = mc_init_tbl[i][1] & 0xF;
+			write_mc_reg(DDRMC_R006, mc_init_tbl[i][1] & 0xFFFFFFF0);
+		} else {
+			write_mc_reg(mc_init_tbl[i][0], mc_init_tbl[i][1]);
+		}
+	}
+
+	// Step2
+	rmw_mc_reg(DDRMC_R025, 0xFCFFFFFF, mc_odt_pins_tbl[0] << 24);
+	rmw_mc_reg(DDRMC_R026, 0xFFFFFCFF, mc_odt_pins_tbl[1] << 8);
+	rmw_mc_reg(DDRMC_R025, 0xFFFCFFFF, mc_odt_pins_tbl[2] << 16);
+	rmw_mc_reg(DDRMC_R026, 0xFFFFFFFC, mc_odt_pins_tbl[3] << 0);
+
+	// Step3
+	rmw_mc_reg(DDRMC_R009, ~(mc_mr1_tbl[0]), mc_mr1_tbl[1]);
+	rmw_mc_reg(DDRMC_R011, ~(mc_mr1_tbl[0]), mc_mr1_tbl[1]);
+
+	// Step4
+	rmw_mc_reg(DDRMC_R010, ~(mc_mr2_tbl[0]), mc_mr2_tbl[1]);
+	rmw_mc_reg(DDRMC_R012, ~(mc_mr2_tbl[0]), mc_mr2_tbl[1]);
+
+	// Step5
+	rmw_mc_reg(DDRMC_R015, ~(mc_mr5_tbl[0]), mc_mr5_tbl[1]);
+	rmw_mc_reg(DDRMC_R016, ~(mc_mr5_tbl[0]), mc_mr5_tbl[1]);
+
+	// Step6
+	rmw_mc_reg(DDRMC_R017, ~(mc_mr6_tbl[0]), mc_mr6_tbl[1]);
+	rmw_mc_reg(DDRMC_R018, ~(mc_mr6_tbl[0]), mc_mr6_tbl[1]);
+
+	// Step7
+	for (i = 0; i < ARRAY_SIZE(mc_phy_settings_tbl); i++) {
+		write_mc_reg(mc_phy_settings_tbl[i][0], mc_phy_settings_tbl[i][1]);
+	}
+
+	// Step8 is skipped because ECC is unused.
+#if (DDR_ECC_ENABLE == 1)
+	program_mc1_ecc_en();
+#endif
+}
+
+
+// main
+void ddr_setup_g2l_100(void)
+{
+	NOTICE("BL2: ddr_setup_g2l_100 - 01\n");
+	uint32_t	sl_lanes, byte_lanes;
+	uint8_t		runBITLVL, runSL, runVREF;
+	uint8_t		lp_auto_entry_en = 0;
+	uint32_t	tmp;
+	int i;
+
+	// /* Initialize global DDR config from DTB.  */
+	// g_ddr_fconf_cfg = ddr_config_getter();
+
+	NOTICE("BL2: setup DDR (Rev. %s)\n", ddr_an_version);
+	// Step2 - Step11
+	cpg_active_ddr(disable_phy_clk);
+
+	// Step12
+	program_mc1_g2l_100(&lp_auto_entry_en);
+
+	// Step13
+	tmp = read_mc_reg(DDRMC_R019);
+	sl_lanes	= ((tmp & 0x1) == 0) ? 3 : 1;
+	byte_lanes	= ((tmp & 0x1) == 0) ? 2 : 1;
+	tmp = read_mc_reg(DDRMC_R039);
+	runBITLVL	= (tmp >> 20) & 0x1;
+	runSL		= (tmp >> 21) & 0x1;
+	runVREF		= (tmp >> 25) & 0x1;
+
+	// Step14
+	program_phy1(sl_lanes, byte_lanes);
+
+	// Step15
+	while ((read_phy_reg(DDRPHY_R42) & 0x00000003) != sl_lanes)
+		;
+
+	// Step16
+	ddr_ctrl_reten_en_n(0);
+	rmw_mc_reg(DDRMC_R007, 0xFFFFFEFF, 0x00000000);
+	rmw_mc_reg(DDRMC_R001, 0xFEFFFFFF, 0x01000000);
+	rmw_mc_reg(DDRMC_R000, 0xFFFFFFFE, 0x00000001);
+	while ((read_mc_reg(DDRMC_R021) & 0x02000000) != 0x02000000)
+		;
+	rmw_phy_reg(DDRPHY_R74, 0xFFF7FFFF, 0x00080000);
+	rmw_mc_reg(DDRMC_R029, 0xFF0000FF, 64 << 8);
+	rmw_mc_reg(DDRMC_R027, 0xE00000FF, 111 << 8);
+	rmw_mc_reg(DDRMC_R020, 0xFFFFFEFF, 0x00000100);
+	udelay(1);
+	rmw_phy_reg(DDRPHY_R74, 0xFFF7FFFF, 0x00000000);
+
+	// Step17
+	cpg_reset_ddr_mc();
+	ddr_ctrl_reten_en_n(1);
+
+	// Step18-19
+	program_mc1_g2l_100(&lp_auto_entry_en);
+
+	// Step20
+	for (i = 0; i < ARRAY_SIZE(swizzle_mc_tbl); i++) {
+		write_mc_reg(swizzle_mc_tbl[i][0], swizzle_mc_tbl[i][1]);
+	}
+	for (i = 0; i < ARRAY_SIZE(swizzle_phy_tbl); i++) {
+		write_phy_reg(swizzle_phy_tbl[i][0], swizzle_phy_tbl[i][1]);
+	}
+
+	// Step21
+	rmw_mc_reg(DDRMC_R000, 0xFFFFFFFE, 0x00000001);
+
+	// Step22
+	while ((read_mc_reg(DDRMC_R021) & 0x02000000) != 0x02000000)
+		;
+
+	// Step23
+	rmw_mc_reg(DDRMC_R023, 0xFDFFFFFF, 0x02000000);
+
+	// Step24
+	exec_trainingWRLVL(sl_lanes);
+
+	// Step25
+	if (runVREF == 1)
+		exec_trainingVREF(sl_lanes, byte_lanes);
+
+	// Step26
+	if (runBITLVL == 1)
+		exec_trainingBITLVL(sl_lanes);
+
+	// Step27
+	opt_delay(sl_lanes, byte_lanes);
+
+	// Step28
+	if (runSL == 1)
+		exec_trainingSL(sl_lanes);
+
+	// Step29
+	program_phy2();
+
+	// Step30
+	program_mc2();
+
+	// Step31 is skipped because ECC is unused.
+
+	// Step32
+	rmw_mc_reg(DDRMC_R006, 0xFFFFFFF0, lp_auto_entry_en & 0xF);
+	NOTICE("BL2: ddr_setup_g2l_100 - Completed\n");
+
+}
