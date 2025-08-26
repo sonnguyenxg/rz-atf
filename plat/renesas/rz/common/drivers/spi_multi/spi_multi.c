@@ -127,6 +127,7 @@ int spi_multi_setup( void )
 
 	/* Device-specific settings */
 	spi_multi_setup_device();
+
 	/* SDR mode serial flash settings */
 	INFO("g_spi_fconf_cfg->phycnt: %d\n", g_spi_fconf_cfg->phycnt);
 	mmio_write_32(SPIM_PHYCNT, g_spi_fconf_cfg->phycnt);
@@ -134,6 +135,7 @@ int spi_multi_setup( void )
 	/* Read timing setting */
 	INFO("g_spi_fconf_cfg->phyoffset1: %d\n", g_spi_fconf_cfg->phyoffset1);
 	mmio_write_32(SPIM_PHYOFFSET1, g_spi_fconf_cfg->phyoffset1);
+
 	INFO("g_spi_fconf_cfg->phyoffset2: %d\n", g_spi_fconf_cfg->phyoffset2);
 	mmio_write_32(SPIM_PHYOFFSET2, g_spi_fconf_cfg->phyoffset2);
 
