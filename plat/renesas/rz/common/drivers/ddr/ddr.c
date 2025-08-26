@@ -1505,7 +1505,6 @@ static void program_mc1_g2l_100(uint8_t *lp_auto_entry_en)
 // main
 void ddr_setup_g2l_100(void)
 {
-	NOTICE("BL2: ddr_setup_g2l_100 - 01\n");
 	uint32_t	sl_lanes, byte_lanes;
 	uint8_t		runBITLVL, runSL, runVREF;
 	uint8_t		lp_auto_entry_en = 0;
@@ -1515,7 +1514,6 @@ void ddr_setup_g2l_100(void)
 	// /* Initialize global DDR config from DTB.  */
 	// g_ddr_fconf_cfg = ddr_config_getter();
 
-	NOTICE("BL2: setup DDR (Rev. %s)\n", ddr_an_version);
 	// Step2 - Step11
 	cpg_active_ddr(disable_phy_clk);
 
@@ -1605,6 +1603,5 @@ void ddr_setup_g2l_100(void)
 
 	// Step32
 	rmw_mc_reg(DDRMC_R006, 0xFFFFFFF0, lp_auto_entry_en & 0xF);
-	NOTICE("BL2: ddr_setup_g2l_100 - Completed\n");
 
 }
