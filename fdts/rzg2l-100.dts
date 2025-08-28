@@ -106,33 +106,33 @@
 			reg = <0 0x40000000 0 0x10000>;
 
 			// DDRMC
-			ddrmc_r030 = <0x00000B02>;
-			ddrmc_r031 = <0x00000106>;
-			ddrmc_r032 = <0x11131C0D>;
-			ddrmc_r033 = <0x12001F15>;
-			ddrmc_r034 = <0x1D19140E>;
-			ddrmc_r035 = <0x17091B1A>;
-			ddrmc_r036 = <0x0A10160C>;
-			ddrmc_r037 = <0x0018051E>;
+			ddrmc_r030 = <0x00001502>;
+			ddrmc_r031 = <0x00000a06>;
+			ddrmc_r032 = <0x170d1112>;
+			ddrmc_r033 = <0x1900130b>;
+			ddrmc_r034 = <0x1f09180c>;
+			ddrmc_r035 = <0x161c0e14>;
+			ddrmc_r036 = <0x01101b1a>;
+			ddrmc_r037 = <0x001d051e>;
 			ddrmc_r038 = <0x00000000>;
 
 			// DDRPHY
 			ddrphy_setup_step1 = <0x00000000>;
-			ddrphy_setup_step2 = <0x14001816>;
+			ddrphy_setup_step2 = <0x1b03150e>;
 			ddrphy_setup_step3 = <0x00000001>;
-			ddrphy_setup_step4 = <0x010D0608>;
+			ddrphy_setup_step4 = <0x16001706>;
 			ddrphy_setup_step5 = <0x00000002>;
-			ddrphy_setup_step6 = <0x02190403>;
+			ddrphy_setup_step6 = <0x0d050807>;
 			ddrphy_setup_step7 = <0x00000003>;
-			ddrphy_setup_step8 = <0x1705150B>;
+			ddrphy_setup_step8 = <0x1901020b>;
 			ddrphy_setup_step9 = <0x00000004>;
 			ddrphy_setup_step10 = <0x13121110>;
 			ddrphy_setup_step11 = <0x00000005>;
-			ddrphy_setup_step12 = <0x07090F0E>;
+			ddrphy_setup_step12 = <0x0f090418>;
 			ddrphy_setup_step13 = <0x00000006>;
-			ddrphy_setup_step14 = <0x1A1D0A1B>;
+			ddrphy_setup_step14 = <0x1a0a1d14>;
 			ddrphy_setup_step15 = <0x00000007>;
-			ddrphy_setup_step16 = <0x001E1C0C>;
+			ddrphy_setup_step16 = <0x001e1c0c>;
 
 			// DDR_DENALI
 			ddr_denali_ctl_30 = <0x000001B8>;

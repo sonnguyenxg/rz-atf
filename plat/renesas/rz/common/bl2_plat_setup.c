@@ -149,7 +149,7 @@ void bl2_platform_setup(void)
 
 #if !DEBUG_RZG2L_FPGA
 	/* initialize DDR */
-	ddr_setup_g2l_100();
+	ddr_setup();
 #endif /* DEBUG_FPGA */
 	rz_io_setup();
 }

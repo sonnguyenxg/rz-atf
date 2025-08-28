@@ -8,6 +8,5 @@
 #define __DDR_H__
 
 void ddr_setup(void);
-void ddr_setup_g2l_100(void);
 
 #endif	/* __DDR_H__ */
